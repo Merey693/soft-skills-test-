@@ -1,0 +1,142 @@
+
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <title>Менің дағдыларым қандай?</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 30px;
+            background-color: #f2f2f2;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+        }
+        .question {
+            margin-bottom: 20px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .question h3 {
+            margin-bottom: 10px;
+        }
+        .question label {
+            display: block;
+            margin-bottom: 8px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 25px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            display: block;
+            margin: 20px auto;
+        }
+        .result {
+            margin-top: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Менде қандай дағдылар бар?</h1>
+<p>Нұсқаулық: Әр сұрақтың 4 жауабының ішінен өзіңізге жақынын таңдаңыз. Әр жауап белгілі бір дағдыны сипаттайды. Сұрақтарға шынайы жауап беріңіз.</p>
+
+<form id="skillsTest">
+
+<!-- Questions -->
+</form>
+
+<button onclick="calculateResult()">Нәтижені көру</button>
+
+<div class="result" id="result"></div>
+
+<script>
+    const questions = [
+        {
+            text: "1. Командаң бір жобаны орындауда қиналып жатыр. Не істейсің?",
+            options: [
+                ["Барлық мүшелерге нақты міндет жүктеп, процесті ұйымдастырамын", "Көшбасшылық"],
+                ["Командамен бірге жағдайды талдап, шешімге бірге келеміз", "Командамен жұмыс"],
+                ["Жаңа, ерекше идея ұсынып, процесті өзгертемін", "Шығармашылық ойлау"],
+                ["Адамдардың көңіл-күйін ескеріп, барлығын қолдаймын", "Эмоционалды интеллект"]
+            ]
+        },
+        {
+            text: "2. Жаңа жобаны бастағанда алдымен не істейсің?",
+            options: [
+                ["Жұмыс жоспарын құрып, күнтізбе арқылы бөліп аламын", "Уақытты басқару"],
+                ["Жобаның әлсіз және мықты жақтарын ой елегінен өткіземін", "Сыни ойлау"],
+                ["Барлығымен танысып, олардың ұсыныстарын тыңдаймын", "Коммуникативтілік"],
+                ["Жобаның мақсатына жету үшін өзімді негізгі рөлге аламын", "Көшбасшылық"]
+            ]
+        },
+        {
+            text: "3. Сабақ не жоба барысында келіспеушілік туса, сен...",
+            options: [
+                ["Екі тарапты да тыңдап, ортақ шешімге келуге көмектесемін", "Коммуникативтілік"],
+                ["Барлығына өз ойымды сенімді түрде ұсынамын", "Көшбасшылық"],
+                ["Адамдардың эмоциясын ескеріп, сабырға шақырамын", "Эмоционалды интеллект"],
+                ["Барлық дәлелдерді қарап, тиімді шешім іздеймін", "Сыни ойлау"]
+            ]
+        },
+        {
+            text: "4. Сыныпта/топта біреудің көңіл-күйі жоқ екенін байқадың. Не істейсің?",
+            options: [
+                ["Жай ғана жағдайын сұраймын", "Эмоционалды интеллект"],
+                ["Өз жұмысымды жалғастыра беремін", "Уақытты басқару"],
+                ["Оны ортаға тартуға тырысамын", "Командамен жұмыс"],
+                ["Көңілін көтеретін бір идея ұсынамын", "Шығармашылық ойлау"]
+            ]
+        }
+        // The rest of the questions can be added in the same format
+    ];
+
+    const form = document.getElementById("skillsTest");
+
+    questions.forEach((q, i) => {
+        const div = document.createElement("div");
+        div.className = "question";
+        div.innerHTML = `<h3>${q.text}</h3>`;
+        q.options.forEach((opt, j) => {
+            const id = `q${i}_opt${j}`;
+            div.innerHTML += `
+                <label>
+                    <input type="radio" name="q${i}" value="${opt[1]}" required> ${opt[0]}
+                </label>`;
+        });
+        form.appendChild(div);
+    });
+
+    function calculateResult() {
+        const formData = new FormData(form);
+        const scores = {};
+        for (const [_, value] of formData.entries()) {
+            scores[value] = (scores[value] || 0) + 1;
+        }
+
+        let topSkill = "";
+        let max = 0;
+        for (const skill in scores) {
+            if (scores[skill] > max) {
+                max = scores[skill];
+                topSkill = skill;
+            }
+        }
+
+        const resultDiv = document.getElementById("result");
+        resultDiv.textContent = `Сіздің басты дағдыңыз: ${topSkill}`;
+    }
+</script>
+
+</body>
+</html>
