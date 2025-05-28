@@ -2,63 +2,35 @@
 <html lang="kk">
 <head>
     <meta charset="UTF-8">
-    <title>Менің дағдыларым қандай?</title>
+    <title>Soft Skills Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 30px;
-            background-color: #f2f2f2;
-            color: #333;
-        }
-        h1 {
-            text-align: center;
-        }
-        .question {
-            margin-bottom: 20px;
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-        }
-        .question h3 {
-            margin-bottom: 10px;
-        }
-        .question label {
-            display: block;
-            margin-bottom: 8px;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 15px 25px;
-            font-size: 16px;
-            border: none;
-            cursor: pointer;
-            border-radius: 8px;
-            display: block;
-            margin: 20px auto;
-        }
-        .result {
-            margin-top: 30px;
-            font-size: 18px;
-            font-weight: bold;
-            text-align: center;
-        }
+        body { font-family: Arial, sans-serif; background: #f2f2f2; color: #333;}
+        .container { max-width: 650px; margin: 32px auto; background: #fff; border-radius: 12px; box-shadow:0 6px 20px #bbb4; padding:35px 25px;}
+        h1{text-align:center;}
+        .question {margin-bottom: 18px; background: #f9f9ff; padding: 18px; border-radius: 10px;}
+        .question h3 {margin-bottom: 10px;}
+        .question label {display: block; margin-bottom: 7px;}
+        .name-input {margin: 24px 0 10px;}
+        input[type="text"] {font-size:1.1em; padding:8px 12px; border-radius:6px; border:1px solid #ccc; width:97%;}
+        button {background-color: #4CAF50; color: white; padding: 13px 22px; font-size: 16px; border: none; cursor: pointer; border-radius: 8px; display: block; margin: 20px auto;}
+        button:hover{background-color:#355c7d;}
+        .error {color: #e53935; text-align: center; margin-bottom: 10px;}
     </style>
 </head>
 <body>
-
-<h1>Менде қандай дағдылар бар?</h1>
-<p>Нұсқаулық: Әр сұрақтың 4 жауабының ішінен өзіңізге жақынын таңдаңыз. Әр жауап белгілі бір дағдыны сипаттайды. Сұрақтарға шынайы жауап беріңіз.</p>
-
+<div class="container">
+<h1>Soft Skills Test</h1>
+<p>Барлық сұрақтарға жауап беріп, аты-жөніңізді толтырыңыз.</p>
 <form id="skillsTest"></form>
-
-<button onclick="calculateResult()">Нәтижені көру</button>
-
-<div class="result" id="result"></div>
-
+<div class="name-input">
+    <input type="text" id="userName" placeholder="Аты-жөніңізді жазыңыз">
+</div>
+<div id="errorMsg" class="error"></div>
+<button type="button" onclick="calculateResult()">Нәтижені көру</button>
+</div>
 <script>
-    const questions = [
-        {
+    const questions = [{
             text: "1. Командаң бір жобаны орындауда қиналып жатыр. Не істейсің?",
             options: [
                 ["Барлық мүшелерге нақты міндет жүктеп, процесті ұйымдастырамын", "Көшбасшылық"],
@@ -149,15 +121,13 @@
             ]
         }
     ];
-
+// ----- questions массивін қысқарту үшін жоғарыдан толық алып кел ----------
     const form = document.getElementById("skillsTest");
-
     questions.forEach((q, i) => {
         const div = document.createElement("div");
         div.className = "question";
         div.innerHTML = `<h3>${q.text}</h3>`;
         q.options.forEach((opt, j) => {
-            const id = `q${i}_opt${j}`;
             div.innerHTML += `
                 <label>
                     <input type="radio" name="q${i}" value="${opt[1]}" required> ${opt[0]}
@@ -168,25 +138,37 @@
 
     function calculateResult() {
         const formData = new FormData(form);
+        const name = document.getElementById('userName').value.trim();
+        let error = '';
+        if (!name) error = 'Аты-жөніңізді толтырыңыз!';
+        else if ([...Array(questions.length).keys()].some(i => !formData.get(`q${i}`))) error = 'Барлық сұраққа жауап беріңіз!';
+        if (error) {
+            document.getElementById("errorMsg").textContent = error;
+            return;
+        }
+        // Дағдыларды есептеу
         const scores = {};
         for (const [_, value] of formData.entries()) {
             scores[value] = (scores[value] || 0) + 1;
         }
-
-        let topSkill = "";
+        let topSkills = [];
         let max = 0;
         for (const skill in scores) {
             if (scores[skill] > max) {
                 max = scores[skill];
-                topSkill = skill;
+                topSkills = [skill];
+            } else if (scores[skill] === max) {
+                topSkills.push(skill);
             }
         }
+        const resultText = topSkills.length === 1
+            ? `Сіздің басты дағдыңыз: ${topSkills[0]}`
+            : `Сіздің басты дағдыларыңыз: ${topSkills.join(", ")}`;
 
-        const resultDiv = document.getElementById("result");
-        resultDiv.textContent = `Сіздің басты дағдыңыз: ${topSkill}`;
+        // localStorage-қа сақтаймыз, result.html-ге жібереміз
+        localStorage.setItem('lastTest', JSON.stringify({name: name, result: resultText}));
+        window.location.href = "result.html";
     }
 </script>
-
 </body>
 </html>
-
